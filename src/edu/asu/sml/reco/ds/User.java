@@ -12,7 +12,7 @@ import lombok.Getter;
  * @author somak
  *
  */
-public class User {
+public class User implements java.io.Serializable {
 
 	@Getter (AccessLevel.PUBLIC) private String userID;
 	@Getter (AccessLevel.PUBLIC) private FeatureSet setOfFeatures;
@@ -53,8 +53,7 @@ public class User {
 	}
 
 	public FeatureSet getSetOfFeatures() {
-		// TODO Auto-generated method stub
-		return null;
+		return setOfFeatures;
 	}
 
 	

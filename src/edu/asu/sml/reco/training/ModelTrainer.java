@@ -1,6 +1,5 @@
 package edu.asu.sml.reco.training;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map.Entry;
@@ -20,9 +19,26 @@ import edu.ucla.sspace.matrix.SparseOnDiskMatrix;
 import edu.ucla.sspace.vector.DoubleVector;
 import edu.ucla.sspace.vector.SparseHashDoubleVector;
 
+/**
+ * This class handles parsing the training data, storing UsersXFeatures matrix and
+ * user-cluster members matrix
+ * @author somak
+ *
+ */
 public class ModelTrainer {
 
-	public static void trainModel(String trainingInputFileName, File userOutputFile, 
+	/**
+	 * The trainingInputFile is parsed to create individual user profiles. The user
+	 * profiles are saved in the userOutputFile. Then clustering is performed in the
+	 * user data and cluster membership is stored in the clustersOutputFile
+	 * 
+	 * @param trainingInputFileName
+	 * @param userOutputFile
+	 * @param clustersOutputFileName
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public static void trainModel(String trainingInputFileName, String userOutputFileName, 
 			String clustersOutputFileName) throws FileNotFoundException, IOException {
 		UserSet newUserSet = new UserSet();
 		ItemSet itemSet = new ItemSet();
@@ -38,7 +54,13 @@ public class ModelTrainer {
 		
 		clusterMembers.serializeToFile(clustersOutputFileName);
 		
+		saveUserProfilesToFile(newUserSet, userOutputFileName);
 		
+	}
+
+	private static void saveUserProfilesToFile(UserSet newUserSet,
+			String userOutputFileName) {
+		newUserSet.serializeToFile(userOutputFileName);
 	}
 
 	private static Matrix createUserMatrix(UserSet newUserSet) {
