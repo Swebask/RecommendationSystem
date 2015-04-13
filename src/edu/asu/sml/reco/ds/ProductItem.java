@@ -18,6 +18,8 @@ public class ProductItem {
 	@Getter (AccessLevel.PUBLIC) private String title;
 	@Getter (AccessLevel.PUBLIC) private double price;
 	
+	@Getter (AccessLevel.PUBLIC) private FeatureSet setOfFeatures;
+	
 	@Getter (AccessLevel.PUBLIC) private Set<String> userIDSet;
 
 	public ProductItem(String productID) {

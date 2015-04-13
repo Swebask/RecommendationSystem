@@ -14,6 +14,8 @@ import lombok.Getter;
  */
 public class User implements java.io.Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	@Getter (AccessLevel.PUBLIC) private String userID;
 	@Getter (AccessLevel.PUBLIC) private FeatureSet setOfFeatures;
 	
@@ -51,10 +53,5 @@ public class User implements java.io.Serializable {
 			
 		}
 	}
-
-	public FeatureSet getSetOfFeatures() {
-		return setOfFeatures;
-	}
-
 	
 }
