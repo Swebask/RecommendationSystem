@@ -46,12 +46,18 @@ public class User implements java.io.Serializable {
 	 */
 	public void addFeatureValuesToProfile(ProductItem productItem,
 			String userID2, String[] featureKeys, String[] featurePhrases) {
+		FeatureSet featuresForThisReview = new FeatureSet();
 		for(int i=0; i < featureKeys.length; i++) {
 			String featureName = featureKeys[i];
-			double value = SentimentScore.getScore(featurePhrases[i]);
-			setFeature(featureName, value);
-			
+			String[] phrases = featurePhrases[i].split("#");
+			double value = 0;
+			for(String phrase:phrases) 
+				value += SentimentScore.getScore(phrase);
+			value =  value/phrases.length;
+			featuresForThisReview.setFeature(featureName, value);
 		}
+		setOfFeatures.aggregateNewSetOfFeatures(featuresForThisReview);
+		productItem.addUserIdAndFeatures(userID2, featuresForThisReview);
 	}
 	
 }

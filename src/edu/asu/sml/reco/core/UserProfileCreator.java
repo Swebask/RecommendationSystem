@@ -35,7 +35,7 @@ public class UserProfileCreator {
 	 * @throws IOException
 	 */
 	public void parseFileAndCreateUserProfiles(String filename) throws FileNotFoundException, IOException {
-		InputStream gzipStream = new GZIPInputStream(new FileInputStream(filename));
+		InputStream gzipStream = new FileInputStream(filename);
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(gzipStream));
 		
 		String line = null;

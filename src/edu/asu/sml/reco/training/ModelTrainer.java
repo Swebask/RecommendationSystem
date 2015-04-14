@@ -40,7 +40,7 @@ public class ModelTrainer {
 	 * @throws IOException
 	 */
 	public static void trainModel(String trainingInputFileName, String userOutputFileName, 
-			String clustersOutputFileName) throws FileNotFoundException, IOException {
+			String itemSetOutputFileName, String clustersOutputFileName) throws FileNotFoundException, IOException {
 		UserSet newUserSet = new UserSet();
 		ItemSet itemSet = new ItemSet();
 		
@@ -57,11 +57,17 @@ public class ModelTrainer {
 		
 		saveUserProfilesToFile(newUserSet, userOutputFileName);
 		
+		saveItemProfilesToFile(itemSet, itemSetOutputFileName);
 	}
 
 	private static void saveUserProfilesToFile(UserSet newUserSet,
 			String userOutputFileName) {
 		newUserSet.serializeToFile(userOutputFileName);
+	}
+	
+	private static void saveItemProfilesToFile(ItemSet itemSet,
+			String itemSetOutputFileName) {
+		itemSet.serializeToFile(itemSetOutputFileName);
 	}
 
 	private static Matrix createUserUserMatrix(UserSet newUserSet) {
@@ -92,5 +98,20 @@ public class ModelTrainer {
 			doubleVector.add(entry.getKey(), entry.getValue());
 		}
 		return doubleVector;
+	}
+	
+	public static void main(String[] args) {
+		String trainingInputFileName = "/home/somak/Dropbox/SML/parsedReviewTraining.txt";
+		String userOutputFileName = "/home/somak/userOutput.txt";
+		String itemSetOutputFileName = "/home/somak/itemSetOutput.txt";
+		String clustersOutputFileName = "/home/somak/clusterOutput.txt";
+		
+		try {
+			ModelTrainer.trainModel(trainingInputFileName, userOutputFileName, itemSetOutputFileName, 
+					clustersOutputFileName);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 }

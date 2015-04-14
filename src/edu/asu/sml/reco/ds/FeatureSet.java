@@ -15,17 +15,26 @@ import net.sf.javaml.clustering.mcl.SparseVector;
  * @author somak
  *
  */
-public class FeatureSet {
+public class FeatureSet implements java.io.Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	@Getter (AccessLevel.PUBLIC) private SparseVector featureValues;
+	@Getter (AccessLevel.PUBLIC) private SparseVector countOfUsers;
 	
 	public FeatureSet(){
 		featureValues = new SparseVector();
+		countOfUsers = new SparseVector();
 	}
 	
 	public void setFeature(String featureName, double value) {
 		int index = FeatureNameTable.lookUp(featureName);
 		featureValues.add(index, value);
+		Double count = countOfUsers.get(index);
+		if(count == null) 
+			countOfUsers.add(index, 1);
+		else
+			countOfUsers.add(index, count+1);
 	}
 	
 	public double getFeatureValue(int index) {
@@ -39,5 +48,19 @@ public class FeatureSet {
 	
 	public Set<Entry<Integer, Double>> getFeatureValueSet() {
 		return featureValues.entrySet();
+	}
+
+	public void aggregateNewSetOfFeatures(FeatureSet featuresForThisReview) {
+		for(Entry<Integer,Double> entry: featuresForThisReview.featureValues.entrySet()) {
+			Double oldValue = this.featureValues.get(entry.getKey());
+			if(oldValue == null)
+				this.featureValues.add(entry.getKey(), entry.getValue());
+			else {
+				double oldCount = countOfUsers.get(entry.getKey());
+				double newValue = (oldValue * oldCount + entry.getValue()) / (oldCount+1);
+				this.featureValues.add(entry.getKey(),newValue);
+			}
+ 				
+		}
 	}
 }
