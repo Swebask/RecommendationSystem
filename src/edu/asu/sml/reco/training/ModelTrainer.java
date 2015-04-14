@@ -9,6 +9,7 @@ import edu.asu.sml.reco.core.ItemSet;
 import edu.asu.sml.reco.core.TestSpectralClustering;
 import edu.asu.sml.reco.core.UserProfileCreator;
 import edu.asu.sml.reco.core.UserSet;
+import edu.asu.sml.reco.core.UserSimilarityUtil;
 import edu.asu.sml.reco.ds.ClusterMembership;
 import edu.asu.sml.reco.ds.FeatureNameTable;
 import edu.asu.sml.reco.ds.FeatureSet;
@@ -47,7 +48,7 @@ public class ModelTrainer {
 		
 		userProfiles.parseFileAndCreateUserProfiles(trainingInputFileName);
 		
-		Matrix matrix = createUserMatrix(newUserSet);
+		Matrix matrix = createUserUserMatrix(newUserSet);
 		
 		ClusterMembership clusterMembers =  TestSpectralClustering.
 				returnAssignmentsAfterSpectralClustering(matrix);
@@ -63,17 +64,23 @@ public class ModelTrainer {
 		newUserSet.serializeToFile(userOutputFileName);
 	}
 
-	private static Matrix createUserMatrix(UserSet newUserSet) {
-		Matrix matrix = new SparseOnDiskMatrix(UserIDLookupTable.getSize(), FeatureNameTable.getSize());
+	private static Matrix createUserUserMatrix(UserSet newUserSet) {
+		Matrix matrix = new SparseOnDiskMatrix(UserIDLookupTable.getSize(), UserIDLookupTable.getSize());
 		
 		Set<String> userIDs = newUserSet.getUserIDIterator();
+		
 		for(String userID: userIDs) {
 			int row = UserIDLookupTable.lookUp(userID);
-			User user = newUserSet.getLinkedUserProfile(userID);
+			User user_i = newUserSet.getLinkedUserProfile(userID);
+			for(String userID2:userIDs) {
+				int col = UserIDLookupTable.lookUp(userID2);
+				User user_j = newUserSet.getLinkedUserProfile(userID2);
+				if(col <= row)
+					continue;
+				double similarity = UserSimilarityUtil.getUserUserSimilarity(user_i, user_j);
+				matrix.set(row, col, similarity);
+			}
 			
-			DoubleVector featureValues = getDoubleVector(user.getSetOfFeatures());
-			
-			matrix.setRow(row, featureValues);
 		}
 		return matrix;
 	}

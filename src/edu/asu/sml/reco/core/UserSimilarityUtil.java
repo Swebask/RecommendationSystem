@@ -9,7 +9,7 @@ import edu.asu.sml.reco.ds.User;
  */
 public class UserSimilarityUtil {
 
-	public double getUserUserSimilarity(User user1, User user2) {
+	public static double getUserUserSimilarity(User user1, User user2) {
 		//TODO calculate user similarity
 		return 0;
 	}
