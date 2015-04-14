@@ -10,6 +10,7 @@ import java.util.zip.GZIPInputStream;
 
 import edu.asu.sml.reco.ds.ProductItem;
 import edu.asu.sml.reco.ds.User;
+import edu.asu.sml.reco.scoring.SentimentScore;
 
 public class UserProfileCreator {
 
@@ -39,7 +40,10 @@ public class UserProfileCreator {
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(gzipStream));
 		
 		String line = null;
-		while((line=bufferedReader.readLine())!= null) {
+        SentimentScore sentimentScore = new SentimentScore();
+        sentimentScore.prepareForScoring();
+
+        while((line=bufferedReader.readLine())!= null) {
 			//product/productId: B00002066I
 			String productID = getValueFromKVPair(line);
 			
@@ -95,7 +99,7 @@ public class UserProfileCreator {
 				productItem = itemSet.getLinkedItemProfile(productID);
 			}
 			user.addFeatureValuesToProfile(productItem, userID, featureKeys.split("@"), 
-					featurePhrases.split("@"));
+					featurePhrases.split("@"), sentimentScore);
 		}
 		
 		bufferedReader.close();

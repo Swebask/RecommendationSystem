@@ -31,7 +31,7 @@ public class FeatureSet implements java.io.Serializable {
 		int index = FeatureNameTable.lookUp(featureName);
 		featureValues.add(index, value);
 		Double count = countOfUsers.get(index);
-		if(count == null) 
+		if(count == null)
 			countOfUsers.add(index, 1);
 		else
 			countOfUsers.add(index, count+1);
