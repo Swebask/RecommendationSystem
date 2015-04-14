@@ -20,6 +20,7 @@ public class Main {
 	public static void main(String[] args) throws IOException {
 		PreProcessor prep = new PreProcessor();
 		prep.init();
+		prep.process();
 	}
 
 }

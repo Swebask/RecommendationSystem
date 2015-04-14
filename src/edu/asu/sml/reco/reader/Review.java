@@ -104,6 +104,15 @@ public class Review {
 	public void setFeatureValues(Map<String, String> featureValues) {
 		this.featureValues = featureValues;
 	}
+
+	@Override
+	public String toString() {
+		return "Review [productId=" + productId + ", title=" + title
+				+ ", price=" + price + ", userId=" + userId + ", helpfulness="
+				+ helpfulness + ", score=" + score + ", time=" + time
+				+ ", summary=" + summary + ", text=" + text
+				+ ", featureValues=" + featureValues + "]";
+	}
 	
 	
 }

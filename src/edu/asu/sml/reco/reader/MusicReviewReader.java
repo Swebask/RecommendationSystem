@@ -34,10 +34,18 @@ public class MusicReviewReader {
 	
 	public Review getNext(){
 		Review review = new Review();
-		boolean flag = false;	
+		boolean flag = false;
+		int count=10;
 		try {
-			String line = this.reader.readLine();
-			while(line!=null){
+			String line;
+			while(count >0){
+				line = this.reader.readLine();
+				if(line!=null && !line.isEmpty()) count--;
+				else if(line==null){
+					flag=false;
+					break;
+				}
+				//System.out.println(line);
 				flag = true;
 				String[] parts = line.split(":");
 				if(parts[0].contains("productId")){
@@ -47,7 +55,7 @@ public class MusicReviewReader {
 				}else if(parts[0].contains("price")){
 					review.setPrice(parts[1]);
 				}else if(parts[0].contains("userId")){
-					review.setUserId(parts[1]);
+					review.setUserId(parts[1].trim());
 				}else if(parts[0].contains("helpfulness")){
 					review.setHelpfulness(parts[1]);
 				}else if(parts[0].contains("score")){
@@ -59,6 +67,7 @@ public class MusicReviewReader {
 				}else if(parts[0].contains("text")){
 					review.setText(parts[1]);
 				}
+				
 			}
 		} catch (IOException e) {
 			review = null;
@@ -66,6 +75,7 @@ public class MusicReviewReader {
 		
 		if(!flag)
 			review = null;
+		
 		return review;
 		
 	}

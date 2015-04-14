@@ -12,8 +12,10 @@ import lombok.Getter;
  * @author somak
  *
  */
-public class User {
+public class User implements java.io.Serializable {
 
+	private static final long serialVersionUID = 1L;
+	
 	@Getter (AccessLevel.PUBLIC) private String userID;
 	@Getter (AccessLevel.PUBLIC) private FeatureSet setOfFeatures;
 	
@@ -44,18 +46,18 @@ public class User {
 	 */
 	public void addFeatureValuesToProfile(ProductItem productItem,
 			String userID2, String[] featureKeys, String[] featurePhrases) {
+		FeatureSet featuresForThisReview = new FeatureSet();
 		for(int i=0; i < featureKeys.length; i++) {
 			String featureName = featureKeys[i];
-			double value = SentimentScore.getScore(featurePhrases[i]);
-			setFeature(featureName, value);
-			
+			String[] phrases = featurePhrases[i].split("#");
+			double value = 0;
+			for(String phrase:phrases) 
+				value += SentimentScore.getScore(phrase);
+			value =  value/phrases.length;
+			featuresForThisReview.setFeature(featureName, value);
 		}
+		setOfFeatures.aggregateNewSetOfFeatures(featuresForThisReview);
+		productItem.addUserIdAndFeatures(userID2, featuresForThisReview);
 	}
-
-	public FeatureSet getSetOfFeatures() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	
 }

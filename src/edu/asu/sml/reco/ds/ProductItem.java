@@ -1,5 +1,6 @@
 package edu.asu.sml.reco.ds;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,18 +13,18 @@ import lombok.Getter;
  * @author somak
  *
  */
-public class ProductItem {
+public class ProductItem implements java.io.Serializable {
 
 	@Getter (AccessLevel.PUBLIC) private String productID;
 	@Getter (AccessLevel.PUBLIC) private String title;
 	@Getter (AccessLevel.PUBLIC) private double price;
 	
-	@Getter (AccessLevel.PUBLIC) private Set<String> userIDSet;
+	@Getter (AccessLevel.PUBLIC) private HashMap<String,FeatureSet> userIDToFeatures;
 
 	public ProductItem(String productID) {
 		super();
 		this.productID = productID;
-		userIDSet = new HashSet<String>();
+		userIDToFeatures = new HashMap<String,FeatureSet>();
 	}
 	
 	public ProductItem(String productID, String title, double price) {
@@ -31,11 +32,14 @@ public class ProductItem {
 		this.productID = productID;
 		this.title = title;
 		this.price = price;
-		userIDSet = new HashSet<String>();
+		userIDToFeatures = new HashMap<String,FeatureSet>();
 	}
 	
-	public void addUserId(String userId) {
-		userIDSet.add(userId);
+	public void addUserIdAndFeatures(String userId, FeatureSet setOfFeatures) {
+		userIDToFeatures.put(userId, setOfFeatures);
 	}
 	
+	public FeatureSet getFeaturesForUserId(String userId) {
+		return userIDToFeatures.get(userId);
+	}
 }
