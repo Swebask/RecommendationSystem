@@ -33,7 +33,7 @@ public class ItemSet {
 	}
 	
 	public ItemSet() {
-		db = DBMaker.newFileDB(new File("testdb1"))
+		db = DBMaker.newFileDB(new File("testdb"+counter++))
 		           .closeOnJvmShutdown()
 		           .make();
 		idToProductItemMap = db.getTreeMap("idToProductItemMap");
