@@ -39,7 +39,11 @@ public class FeatureNameTable {
 	}
 	
 	public static int lookUp(String featureName) {
-		return stringFeaturesToIndexMap.get(featureName);
+		Integer value =  stringFeaturesToIndexMap.get(featureName.toLowerCase());
+		if(value != null)
+			return value;
+		value = stringFeaturesToIndexMap.get(featureName);
+		return value == null ? -1 : value;
 	}
 	
 	public static void main(String args[]) throws IOException{

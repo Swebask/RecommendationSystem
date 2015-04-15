@@ -107,6 +107,9 @@ public class ModelTrainer {
 		String clustersOutputFileName = "/home/somak/clusterOutput.txt";
 		
 		try {
+			FeatureNameTable.populateFeatureNames();
+			UserIDLookupTable.populateFeatureNames();
+			System.out.println("Intitalization done...");
 			ModelTrainer.trainModel(trainingInputFileName, userOutputFileName, itemSetOutputFileName, 
 					clustersOutputFileName);
 		} catch (IOException e) {

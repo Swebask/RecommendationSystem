@@ -25,7 +25,10 @@ public class UserProfileCreator {
 	}
 
 	private String getValueFromKVPair(String line) {
-		return line.split(":")[1];
+		String[] tokens = line.split(":");
+		if(tokens.length < 2)
+			return "";
+		return tokens[1];
 	}
 	
 	/**
@@ -43,7 +46,12 @@ public class UserProfileCreator {
         SentimentScore sentimentScore = new SentimentScore();
         sentimentScore.prepareForScoring();
 
+        int reviewNum =0;
         while((line=bufferedReader.readLine())!= null) {
+        	reviewNum++;
+			if(reviewNum%1000==0)
+				System.out.println(reviewNum +" Reviews processed..");
+			
 			//product/productId: B00002066I
 			String productID = getValueFromKVPair(line);
 			
@@ -91,6 +99,9 @@ public class UserProfileCreator {
 			
 			line = bufferedReader.readLine();
 			//empty line ignore
+			
+			if(featureKeys.equals("") || featurePhrases.equals(""))
+				continue;
 			
 			User user = userSet.getLinkedUserProfile(userID);
 			ProductItem productItem = itemSet.getLinkedItemProfile(productID);

@@ -29,6 +29,8 @@ public class FeatureSet implements java.io.Serializable {
 	
 	public void setFeature(String featureName, double value) {
 		int index = FeatureNameTable.lookUp(featureName);
+		if(index == -1)
+			return;
 		featureValues.add(index, value);
 		Double count = countOfUsers.get(index);
 		if(count == null)
@@ -45,6 +47,8 @@ public class FeatureSet implements java.io.Serializable {
 	
 	public double getFeatureValue(String featureName) {
 		int index = FeatureNameTable.lookUp(featureName);
+		if(index == -1)
+			return Double.MIN_VALUE;
 		return getFeatureValue(index);
 	}
 	

@@ -52,7 +52,7 @@ public class User implements java.io.Serializable {
 		FeatureSet featuresForThisReview = new FeatureSet();
         double value;
 
-		for(int i = 0; i < featureKeys.length; i++) {
+		for(int i = 1; i < featureKeys.length; i++) {
             value = 0.0;
 
             String featureName = featureKeys[i];
