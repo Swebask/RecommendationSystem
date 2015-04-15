@@ -24,6 +24,11 @@ public class ReviewPredictor {
 		 */
 	}
 	public Review predict(String userId, String itemId){
+		/**
+		 * Read the user cluster
+		 * From the user cluster get users 
+		 * From ItemSet get the corresponding reviews
+		 */
 		
 		return null;
 	}
