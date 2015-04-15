@@ -4,6 +4,8 @@ import edu.asu.sml.reco.scoring.SentimentScore;
 import lombok.AccessLevel;
 import lombok.Getter;
 
+import java.io.IOException;
+
 /**
  * This class defines an User. This representation of user will be obtained after
  * we have parsed all the comments, extracted features and set feature-values to
@@ -45,19 +47,24 @@ public class User implements java.io.Serializable {
 	 * @param featurePhrases
 	 */
 	public void addFeatureValuesToProfile(ProductItem productItem,
-			String userID2, String[] featureKeys, String[] featurePhrases) {
+			String userID2, String[] featureKeys, String[] featurePhrases, SentimentScore sentimentScore) throws IOException {
+
 		FeatureSet featuresForThisReview = new FeatureSet();
-		for(int i=0; i < featureKeys.length; i++) {
-			String featureName = featureKeys[i];
-			String[] phrases = featurePhrases[i].split("#");
-			double value = 0;
-			for(String phrase:phrases) 
-				value += SentimentScore.getScore(phrase);
+        double value;
+
+		for(int i = 0; i < featureKeys.length; i++) {
+            value = 0.0;
+
+            String featureName = featureKeys[i];
+            String[] phrases = featurePhrases[i].split("#");
+
+            for(String phrase:phrases)
+				value += sentimentScore.getScore(phrase);
 			value =  value/phrases.length;
-			featuresForThisReview.setFeature(featureName, value);
+
+            featuresForThisReview.setFeature(featureName, value);
 		}
 		setOfFeatures.aggregateNewSetOfFeatures(featuresForThisReview);
 		productItem.addUserIdAndFeatures(userID2, featuresForThisReview);
 	}
-	
 }

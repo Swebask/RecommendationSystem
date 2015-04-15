@@ -31,19 +31,21 @@ public class FeatureSet implements java.io.Serializable {
 		int index = FeatureNameTable.lookUp(featureName);
 		featureValues.add(index, value);
 		Double count = countOfUsers.get(index);
-		if(count == null) 
+		if(count == null)
 			countOfUsers.add(index, 1);
 		else
 			countOfUsers.add(index, count+1);
 	}
 	
 	public double getFeatureValue(int index) {
-		return featureValues.get(index);
+        if(featureValues.containsKey(index))
+    		return featureValues.get(index);
+        return 0.0;
 	}
 	
 	public double getFeatureValue(String featureName) {
 		int index = FeatureNameTable.lookUp(featureName);
-		return featureValues.get(index);
+		return getFeatureValue(index);
 	}
 	
 	public Set<Entry<Integer, Double>> getFeatureValueSet() {
@@ -63,4 +65,8 @@ public class FeatureSet implements java.io.Serializable {
  				
 		}
 	}
+
+    public Set<Integer> getFeatureIndices() {
+        return featureValues.keySet();
+    }
 }
