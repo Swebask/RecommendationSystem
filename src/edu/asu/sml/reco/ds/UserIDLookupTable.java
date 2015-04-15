@@ -1,20 +1,40 @@
 package edu.asu.sml.reco.ds;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 public class UserIDLookupTable {
-	private static HashMap<String, Integer> usersToIndexMap = new HashMap<String, Integer>();
+	private static HashMap<String, Entry<Integer,Double>> usersToIndexMap = 
+			new HashMap<String, Entry<Integer,Double>>();
 	private static int size;
-	
-	public static void populateFeatureNames() {
-		//TODO iterate over feature names and populate hashmap.
+
+	public static void populateFeatureNames() throws IOException {
+		
+		InputStream gzipStream = new FileInputStream("./allUsersAverage.txt");
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(gzipStream));
+		String line = null;
+		int i=0;
+		while((line=bufferedReader.readLine())!= null) {
+			if(!line.isEmpty()){
+				String[] parts = line.split(":");
+				usersToIndexMap.put(parts[0].trim(), new AbstractMap.SimpleEntry<Integer,Double>(i++, 
+						Double.valueOf(parts[1])));
+			}
+		}
+		bufferedReader.close();
 	}
-	
+
 	public static int getSize() {
 		return size;
 	}
-	
+
 	public static int lookUp(String userID) {
-		return usersToIndexMap.get(userID);
+		return usersToIndexMap.get(userID).getKey();
 	}
 }
