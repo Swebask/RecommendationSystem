@@ -54,7 +54,9 @@ public class User implements java.io.Serializable {
 
 		for(int i = 1; i < featureKeys.length; i++) {
             value = 0.0;
-
+            
+            if(featurePhrases.length <= i)
+            	continue;
             String featureName = featureKeys[i];
             String[] phrases = featurePhrases[i].split("#");
 
