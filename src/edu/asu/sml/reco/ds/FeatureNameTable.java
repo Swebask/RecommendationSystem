@@ -46,9 +46,12 @@ public class FeatureNameTable {
 	}
 	
 	public static int lookUp(String featureName) {
-		if(!stringFeaturesToIndexMap.containsKey(featureName.toLowerCase()))
-			return -1;
-		return stringFeaturesToIndexMap.get(featureName.toLowerCase());
+
+		Integer value =  stringFeaturesToIndexMap.get(featureName.toLowerCase());
+		if(value != null)
+			return value;
+		value = stringFeaturesToIndexMap.get(featureName);
+		return value == null ? -1 : value;
 	}
 	
 	public static void main(String args[]) throws IOException{

@@ -48,6 +48,10 @@ public class ModelTrainer {
 		
 		userProfiles.parseFileAndCreateUserProfiles(trainingInputFileName);
 		
+		saveUserProfilesToFile(newUserSet, userOutputFileName);
+		
+		saveItemProfilesToFile(itemSet, itemSetOutputFileName);
+		
 		Matrix matrix = createUserUserMatrix(newUserSet);
 		
 		ClusterMembership clusterMembers =  TestSpectralClustering.
@@ -55,9 +59,7 @@ public class ModelTrainer {
 		
 		clusterMembers.serializeToFile(clustersOutputFileName);
 		
-		saveUserProfilesToFile(newUserSet, userOutputFileName);
-		
-		saveItemProfilesToFile(itemSet, itemSetOutputFileName);
+
 	}
 
 	private static void saveUserProfilesToFile(UserSet newUserSet,
@@ -107,6 +109,9 @@ public class ModelTrainer {
 		String clustersOutputFileName = "clusterOutput.txt";
 		
 		try {
+			FeatureNameTable.populateFeatureNames();
+			UserIDLookupTable.populateFeatureNames();
+			System.out.println("Intitalization done...");
 			ModelTrainer.trainModel(trainingInputFileName, userOutputFileName, itemSetOutputFileName, 
 					clustersOutputFileName);
 		} catch (IOException e) {
