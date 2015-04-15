@@ -19,7 +19,14 @@ public class FeatureNameTable {
 
 	private static HashMap<String, Integer> stringFeaturesToIndexMap = new HashMap<String, Integer>();
 	private static int size;
-	
+	static {
+		try {
+			FeatureNameTable.populateFeatureNames();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	public static void populateFeatureNames() throws IOException {
 		//TODO iterate over feature names and populate hashmap.
 		InputStream gzipStream = new FileInputStream("./allFeature.txt");
@@ -39,7 +46,9 @@ public class FeatureNameTable {
 	}
 	
 	public static int lookUp(String featureName) {
-		return stringFeaturesToIndexMap.get(featureName);
+		if(!stringFeaturesToIndexMap.containsKey(featureName.toLowerCase()))
+			return -1;
+		return stringFeaturesToIndexMap.get(featureName.toLowerCase());
 	}
 	
 	public static void main(String args[]) throws IOException{

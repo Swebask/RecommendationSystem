@@ -54,8 +54,10 @@ public class User implements java.io.Serializable {
 
 		for(int i = 0; i < featureKeys.length; i++) {
             value = 0.0;
+            try{
 
             String featureName = featureKeys[i];
+            
             String[] phrases = featurePhrases[i].split("#");
 
             for(String phrase:phrases)
@@ -63,6 +65,9 @@ public class User implements java.io.Serializable {
 			value =  value/phrases.length;
 
             featuresForThisReview.setFeature(featureName, value);
+            }catch(Exception e){
+            	System.out.println("Issue:"+productItem.getProductID()+","+userID2);
+            }
 		}
 		setOfFeatures.aggregateNewSetOfFeatures(featuresForThisReview);
 		productItem.addUserIdAndFeatures(userID2, featuresForThisReview);

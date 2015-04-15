@@ -25,7 +25,11 @@ public class UserProfileCreator {
 	}
 
 	private String getValueFromKVPair(String line) {
+		try{
 		return line.split(":")[1];
+		}catch(Exception e){
+			return "";
+		}
 	}
 	
 	/**

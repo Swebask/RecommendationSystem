@@ -101,10 +101,10 @@ public class ModelTrainer {
 	}
 	
 	public static void main(String[] args) {
-		String trainingInputFileName = "/home/somak/Dropbox/SML/parsedReviewTraining.txt";
-		String userOutputFileName = "/home/somak/userOutput.txt";
-		String itemSetOutputFileName = "/home/somak/itemSetOutput.txt";
-		String clustersOutputFileName = "/home/somak/clusterOutput.txt";
+		String trainingInputFileName = "./parsedReviewTraining.txt";
+		String userOutputFileName = "userOutput.txt";
+		String itemSetOutputFileName = "itemSetOutput.txt";
+		String clustersOutputFileName = "clusterOutput.txt";
 		
 		try {
 			ModelTrainer.trainModel(trainingInputFileName, userOutputFileName, itemSetOutputFileName, 

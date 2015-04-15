@@ -13,7 +13,14 @@ public class UserIDLookupTable {
 	private static HashMap<String, Entry<Integer,Double>> usersToIndexMap = 
 			new HashMap<String, Entry<Integer,Double>>();
 	private static int size;
-
+	static {
+		try {
+			UserIDLookupTable.populateFeatureNames();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	public static void populateFeatureNames() throws IOException {
 		
 		InputStream gzipStream = new FileInputStream("./allUsersAverage.txt");
@@ -31,7 +38,7 @@ public class UserIDLookupTable {
 	}
 
 	public static int getSize() {
-		return size;
+		return usersToIndexMap.size();
 	}
 
 	public static int lookUp(String userID) {
