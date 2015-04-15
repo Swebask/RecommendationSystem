@@ -1,14 +1,24 @@
 package edu.asu.sml.reco.training;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.Set;
+
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
 
 import edu.asu.sml.reco.core.ItemSet;
 import edu.asu.sml.reco.core.TestSpectralClustering;
@@ -18,11 +28,13 @@ import edu.asu.sml.reco.core.UserSimilarityUtil;
 import edu.asu.sml.reco.ds.ClusterMembership;
 import edu.asu.sml.reco.ds.FeatureNameTable;
 import edu.asu.sml.reco.ds.FeatureSet;
+import edu.asu.sml.reco.ds.ProductItem;
 import edu.asu.sml.reco.ds.User;
 import edu.asu.sml.reco.ds.UserIDLookupTable;
 import edu.ucla.sspace.matrix.Matrix;
 import edu.ucla.sspace.matrix.SparseOnDiskMatrix;
 import edu.ucla.sspace.vector.DoubleVector;
+import edu.ucla.sspace.vector.SparseDoubleVector;
 import edu.ucla.sspace.vector.SparseHashDoubleVector;
 
 /**
@@ -91,6 +103,31 @@ public class ModelTrainer {
 		} 
 	}
 
+	public static Matrix deserializeUserSimilarityMatrix(
+			String userSimilarityOutputFileName) throws ClassNotFoundException {
+		try {
+			InputStream file = new FileInputStream(userSimilarityOutputFileName);
+		    InputStream buffer = new BufferedInputStream(file);
+		    ObjectInput input = new ObjectInputStream (buffer);
+		    int rows = input.readInt();
+
+		    Matrix matrix = new SparseOnDiskMatrix(UserIDLookupTable.getSize(), UserIDLookupTable.getSize());
+		    for(int i=0; i < rows; i++) {
+		    	SparseDoubleVector vector = (SparseHashDoubleVector) input.readObject();
+		    	
+		    	matrix.setRow(i, vector);
+		    }
+		    
+		    input.close();
+		    return matrix;
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null; 
+	}
+	
 	private static void saveUserProfilesToFile(UserSet newUserSet,
 			String userOutputFileName) {
 		newUserSet.serializeToFile(userOutputFileName);
