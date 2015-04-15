@@ -2,6 +2,7 @@ package edu.asu.sml.reco.ds;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import lombok.AccessLevel;
@@ -41,5 +42,9 @@ public class ProductItem implements java.io.Serializable {
 	
 	public FeatureSet getFeaturesForUserId(String userId) {
 		return userIDToFeatures.get(userId);
+	}
+	
+	public Set<Entry<String, FeatureSet>> getAllReviewsOnThisItem(){
+		return this.userIDToFeatures.entrySet();
 	}
 }

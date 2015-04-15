@@ -5,6 +5,8 @@ package edu.asu.sml.reco.reader;
 
 import java.util.Map;
 
+import edu.asu.sml.reco.ds.FeatureSet;
+
 /**
  * @author Arindam
  *
@@ -21,6 +23,8 @@ public class Review {
 		summary,
 		text;
 	private Map<String,String> featureValues;
+	private FeatureSet featureVector = null;
+	
 
 	public String getProductId() {
 		return productId;
@@ -112,6 +116,14 @@ public class Review {
 				+ helpfulness + ", score=" + score + ", time=" + time
 				+ ", summary=" + summary + ", text=" + text
 				+ ", featureValues=" + featureValues + "]";
+	}
+
+	public FeatureSet getFeatureVector() {
+		return featureVector;
+	}
+
+	public void setFeatureVector(FeatureSet featureVector) {
+		this.featureVector = featureVector;
 	}
 	
 	

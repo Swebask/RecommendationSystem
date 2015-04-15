@@ -18,15 +18,15 @@ import net.sf.javaml.clustering.mcl.SparseVector;
 public class FeatureSet implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	@Getter (AccessLevel.PUBLIC) private SparseVector featureValues;
 	@Getter (AccessLevel.PUBLIC) private SparseVector countOfUsers;
-	
+
 	public FeatureSet(){
 		featureValues = new SparseVector();
 		countOfUsers = new SparseVector();
 	}
-	
+
 	public void setFeature(String featureName, double value) {
 		int index = FeatureNameTable.lookUp(featureName);
 		if(index == -1)
@@ -38,20 +38,20 @@ public class FeatureSet implements java.io.Serializable {
 		else
 			countOfUsers.add(index, count+1);
 	}
-	
+
 	public double getFeatureValue(int index) {
-        if(featureValues.containsKey(index))
-    		return featureValues.get(index);
-        return 0.0;
+		if(featureValues.containsKey(index))
+			return featureValues.get(index);
+		return 0.0;
 	}
-	
+
 	public double getFeatureValue(String featureName) {
 		int index = FeatureNameTable.lookUp(featureName);
 		if(index == -1)
 			return Double.MIN_VALUE;
 		return getFeatureValue(index);
 	}
-	
+
 	public Set<Entry<Integer, Double>> getFeatureValueSet() {
 		return featureValues.entrySet();
 	}
@@ -66,11 +66,28 @@ public class FeatureSet implements java.io.Serializable {
 				double newValue = (oldValue * oldCount + entry.getValue()) / (oldCount+1);
 				this.featureValues.add(entry.getKey(),newValue);
 			}
- 				
+
 		}
 	}
 
-    public Set<Integer> getFeatureIndices() {
-        return featureValues.keySet();
-    }
+	public void merge(FeatureSet featuresForThisReview,Double scaling) {
+		for(Entry<Integer,Double> entry: featuresForThisReview.featureValues.entrySet()) {
+			Double oldValue = this.featureValues.get(entry.getKey());
+			if(oldValue==null){
+				this.featureValues.add(entry.getKey(), scaling*entry.getValue());
+			}else{
+				this.featureValues.add(entry.getKey(), scaling*entry.getValue()+oldValue);
+			}
+
+		}
+	}
+
+	public void scale(Double scaling) {
+		for(Entry<Integer,Double> entry: this.featureValues.entrySet()) {
+			this.featureValues.add(entry.getKey(), scaling*entry.getValue());	
+		}
+	}
+	public Set<Integer> getFeatureIndices() {
+		return featureValues.keySet();
+	}
 }

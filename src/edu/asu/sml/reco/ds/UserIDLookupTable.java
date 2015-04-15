@@ -41,7 +41,11 @@ public class UserIDLookupTable {
 		return usersToIndexMap.size();
 	}
 
-	public static int lookUp(String userID) {
+	public static Integer lookUp(String userID) {
 		return usersToIndexMap.get(userID).getKey();
+	}
+	
+	public static Double getAveragerating(String userID){
+		return usersToIndexMap.get(userID).getValue();
 	}
 }
