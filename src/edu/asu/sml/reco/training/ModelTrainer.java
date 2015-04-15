@@ -1,7 +1,12 @@
 package edu.asu.sml.reco.training;
 
+import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -40,7 +45,8 @@ public class ModelTrainer {
 	 * @throws IOException
 	 */
 	public static void trainModel(String trainingInputFileName, String userOutputFileName, 
-			String itemSetOutputFileName, String clustersOutputFileName) throws FileNotFoundException, IOException {
+			String itemSetOutputFileName, String clustersOutputFileName,
+			String userSimilarityOutputFileName) throws FileNotFoundException, IOException {
 		UserSet newUserSet = new UserSet();
 		ItemSet itemSet = new ItemSet();
 		
@@ -54,12 +60,35 @@ public class ModelTrainer {
 		
 		Matrix matrix = createUserUserMatrix(newUserSet);
 		
+		saveUserSimilarityMatrix(matrix, userSimilarityOutputFileName);
+		
 		ClusterMembership clusterMembers =  TestSpectralClustering.
 				returnAssignmentsAfterSpectralClustering(matrix);
 		
 		clusterMembers.serializeToFile(clustersOutputFileName);
 		
 
+	}
+
+	private static void saveUserSimilarityMatrix(Matrix matrix,
+			String userSimilarityOutputFileName) {
+		try {
+			OutputStream file = new FileOutputStream(userSimilarityOutputFileName);
+			OutputStream buffer = new BufferedOutputStream(file);
+			ObjectOutput output = new ObjectOutputStream(buffer);
+			int rows = matrix.rows();
+			output.writeInt(rows);
+			for(int i=0; i < rows ; i++) {
+				output.writeObject(matrix.getRowVector(i));
+			}
+			//output.writeObject(matrix);
+			output.close();
+			System.out.println("User set exported to:" + userSimilarityOutputFileName);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
 	}
 
 	private static void saveUserProfilesToFile(UserSet newUserSet,
@@ -107,13 +136,14 @@ public class ModelTrainer {
 		String userOutputFileName = "userOutput.txt";
 		String itemSetOutputFileName = "itemSetOutput.txt";
 		String clustersOutputFileName = "clusterOutput.txt";
+		String similarityMatrixOutputFileName = "similarityMatrix.matrix";
 		
 		try {
 			FeatureNameTable.populateFeatureNames();
 			UserIDLookupTable.populateFeatureNames();
 			System.out.println("Intitalization done...");
 			ModelTrainer.trainModel(trainingInputFileName, userOutputFileName, itemSetOutputFileName, 
-					clustersOutputFileName);
+					clustersOutputFileName, similarityMatrixOutputFileName);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
