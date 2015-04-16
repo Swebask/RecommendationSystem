@@ -67,11 +67,12 @@ public class ModelTrainer {
 		Matrix matrix = createUserUserMatrix(newUserSet);
 		
 		saveUserSimilarityMatrix(matrix, userSimilarityOutputFileName);
-		
+		/*
 		ClusterMembership clusterMembers =  TestSpectralClustering.
 				returnAssignmentsAfterSpectralClustering(matrix);
 		
 		clusterMembers.serializeToFile(clustersOutputFileName);
+		*/
 	}
 
 	public static void calculateSimilarityMatrixAndCluster(String userOutputFileName, 
@@ -169,7 +170,7 @@ public class ModelTrainer {
 		itemSet.serializeToFile(itemSetOutputFileName);
 	}
 
-	private static Matrix createUserUserMatrix(UserSet newUserSet) {
+	public static Matrix createUserUserMatrix(UserSet newUserSet) {
 		Matrix matrix = new SparseOnDiskMatrix(UserIDLookupTable.getSize(), UserIDLookupTable.getSize());
 		
 		Set<String> userIDs = newUserSet.getUserIDIterator();
@@ -203,8 +204,8 @@ public class ModelTrainer {
 	}
 	
 	public static void main(String[] args) {
-		String pathPrefix = "/home/somak/Dropbox/SML/";
-		String trainingInputFileName = "./parsedReviewTraining.txt";
+		String pathPrefix = "./";
+		String trainingInputFileName = "parsedReviewTraining.txt";
 		String userOutputFileName = "userOutput.txt";
 		String itemSetOutputFileName = "itemSetOutput.txt";
 		String clustersOutputFileName = "clusterOutput.txt";
@@ -214,8 +215,8 @@ public class ModelTrainer {
 			FeatureNameTable.populateFeatureNames();
 			UserIDLookupTable.populateFeatureNames();
 			System.out.println("Intitalization done...");
-			//ModelTrainer.trainModel(trainingInputFileName, userOutputFileName, itemSetOutputFileName, 
-			//		clustersOutputFileName, similarityMatrixOutputFileName);
+			ModelTrainer.trainModel(trainingInputFileName, userOutputFileName, itemSetOutputFileName, 
+					clustersOutputFileName, similarityMatrixOutputFileName);
 			
 			ModelTrainer.calculateSimilarityMatrixAndCluster(pathPrefix+userOutputFileName, clustersOutputFileName, 
 					similarityMatrixOutputFileName);

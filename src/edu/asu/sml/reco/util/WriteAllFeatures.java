@@ -26,7 +26,7 @@ public class WriteAllFeatures {
 	public WriteAllFeatures() throws IOException{
 		writerFeature = new BufferedWriter(new OutputStreamWriter(
 				new FileOutputStream("allFeature.txt"), "utf-8"));
-		InputStream fileStream = new FileInputStream("C:\\Users\\Arindam\\git\\RecommendationSystem\\parsedReviewTraining.txt");
+		InputStream fileStream = new FileInputStream("./parsedReviewTraining.txt");
 		Reader decoder = new InputStreamReader(fileStream, "UTF-8");
 		this.reader = new BufferedReader(decoder);
 		this.features = new HashSet<String>();
