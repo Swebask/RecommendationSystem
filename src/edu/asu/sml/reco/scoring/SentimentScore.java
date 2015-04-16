@@ -59,19 +59,19 @@ public class SentimentScore
 	    String token1 = null, token2 = null;
 	    int numberOfTokens = tokens.size();
 
-	    for (int i=0;i<numberOfTokens-1;i++) {
+	    for (int i=0;i<numberOfTokens;i++) {
 	    	token1 = tokens.get(i).get(CoreAnnotations.PartOfSpeechAnnotation.class);
-	    	token2 = tokens.get(i + 1).get(CoreAnnotations.PartOfSpeechAnnotation.class);
 
-	    	 if(adverbSymbolList.contains(token1))
+	    	 if(adverbSymbolList.contains(token1) && i<numberOfTokens-1) //not the last element
 	    	 {
+                 token2 = tokens.get(i + 1).get(CoreAnnotations.PartOfSpeechAnnotation.class);
 	    		 if(adjectiveSymbolList.contains(token2))
 	    		 {
-	    		    foundAdverbAdjectivePairList.add((tokens.get(i).toString().split(" "))[0] +" "+(tokens.get(i).toString().split(" "))[0]);
+	    		    foundAdverbAdjectivePairList.add((tokens.get(i).toString().split("-"))[0] +" "+(tokens.get(i+1).toString().split("-"))[0]);
 	    		    i++;
 	    		 }
 	    	} else if(adjectiveSymbolList.contains(token1)) {
-	        	foundAdjectivesList.add((tokens.get(i).toString().split(" "))[0]);
+	        	foundAdjectivesList.add((tokens.get(i).toString().split("-"))[0]);
 
 	        } else if(verbSymbolList.contains(token1)) {
                  foundVerbsList.add((tokens.get(i).toString().split("-"))[0]);
@@ -98,8 +98,8 @@ public class SentimentScore
 	public void adverbAdjectivePolarity() throws IOException
 	{
 		double advScore, adjScore;
-		String StronglyAffinedAdverbs="astronomically, exceedingly, extremely, immensely, very, absolutely, certainly, exactly, totally";
-		String WeakOrDoubtAdverbs="barely, scarcely, weakly, slightly, possibly, roughly, apparently, seemingly";
+		String StronglyAffinedAdverbs="astronomically, exceedingly, really, extremely, immensely, very, inexplicably, absolutely, certainly, exactly, totally";
+		String WeakOrDoubtAdverbs="barely, scarcely, weakly, hardly, slightly, possibly, roughly, apparently, seemingly, nearly";
 
         for(String adverbAdjectivePhrase : foundAdverbAdjectivePairList) {
 			String[] adverbAdjectivePair = adverbAdjectivePhrase.split(" ");
@@ -115,7 +115,7 @@ public class SentimentScore
 			else if(WeakOrDoubtAdverbs.contains(adverbAdjectivePair[0]))
 			{
 				if(adjScore>0)
-					score += adjScore - (1 - adjScore) * advScore;
+					score += adjScore - (1 - adjScore) * Math.abs(advScore);
 				else if(adjScore<0)
 					score += adjScore + (1 - adjScore) * advScore;
 			}
@@ -149,6 +149,6 @@ public class SentimentScore
     public static void main(String[] args) throws IOException {
         SentimentScore ss = new SentimentScore();
         ss.prepareForScoring();
-        System.out.println(ss.getScore("I love this"));
+        System.out.println(ss.getScore("This is really good"));
     }
 }
