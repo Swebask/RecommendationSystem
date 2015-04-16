@@ -90,6 +90,18 @@ public class ModelTrainer {
 		clusterMembers.serializeToFile(clustersOutputFileName);
 	}
 	
+	public static void performClustering(String clustersOutputFileName,
+			String userSimilarityOutputFileName) {
+		Matrix matrix = deserializeUserSimilarityMatrix(userSimilarityOutputFileName);
+		
+		System.gc();
+		
+		ClusterMembership clusterMembers =  TestSpectralClustering.
+				returnAssignmentsAfterSpectralClustering(matrix);
+		
+		clusterMembers.serializeToFile(clustersOutputFileName);
+	}
+	
 	private static void saveUserSimilarityMatrix(Matrix matrix,
 			String userSimilarityOutputFileName) {
 		try {
@@ -118,7 +130,7 @@ public class ModelTrainer {
 	}
 
 	public static Matrix deserializeUserSimilarityMatrix(
-			String userSimilarityOutputFileName) throws ClassNotFoundException {
+			String userSimilarityOutputFileName) {
 		try {
 			InputStream file = new FileInputStream(userSimilarityOutputFileName);
 		    InputStream buffer = new BufferedInputStream(file);
@@ -128,8 +140,11 @@ public class ModelTrainer {
 		    Matrix matrix = new SparseOnDiskMatrix(UserIDLookupTable.getSize(), UserIDLookupTable.getSize());
 		    for(int i=0; i < rows; i++) {
 		    	double[] vector = (double[]) input.readObject();
-		    	
 		    	matrix.setRow(i, vector);
+		    	if(i%100==0) {
+					System.out.println(i + " rows loaded...");
+					if(i%1000==0)System.gc();
+				}
 		    }
 		    
 		    input.close();
@@ -137,6 +152,8 @@ public class ModelTrainer {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 		return null; 
@@ -200,7 +217,7 @@ public class ModelTrainer {
 			//ModelTrainer.trainModel(trainingInputFileName, userOutputFileName, itemSetOutputFileName, 
 			//		clustersOutputFileName, similarityMatrixOutputFileName);
 			
-			ModelTrainer.calculateSimilarityMatrixAndCluster(pathPrefix+userOutputFileName, pathPrefix +clustersOutputFileName, 
+			ModelTrainer.calculateSimilarityMatrixAndCluster(pathPrefix+userOutputFileName, clustersOutputFileName, 
 					similarityMatrixOutputFileName);
 		} catch (IOException e) {
 			e.printStackTrace();
