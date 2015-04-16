@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentNavigableMap;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
 
+import edu.asu.sml.reco.ds.ProductItem;
 import edu.asu.sml.reco.ds.User;
 
 public class UserSet {
@@ -66,7 +67,8 @@ public class UserSet {
 			ObjectOutput output = new ObjectOutputStream(buffer);
 			output.writeInt(idToUserMap.size());
 			for(Entry<String,User> entry:idToUserMap.entrySet()) {
-				output.writeObject(entry);
+				output.writeObject(entry.getKey());
+				output.writeObject(entry.getValue());
 			}
 			output.close();
 			System.out.println("User set exported to:" + outputFileName);
@@ -89,8 +91,10 @@ public class UserSet {
 		    System.out.println("Total number of users:"+size);
 		    ConcurrentNavigableMap<String,User> idToUserMap = db.getTreeMap("idToUserMap");
 		    for(int i=0; i < size; i++) {
-		    	Entry<String,User> entry = (Entry<String, User>) input.readObject();
-		    	idToUserMap.put(entry.getKey(), entry.getValue());
+		    	String key = (String)input.readObject();
+		    	User user = (User) input.readObject();
+		    	//Entry<String,User> entry = (Entry<String, User>) input.readObject();
+		    	idToUserMap.put(key, user);
 		    	if(i%5000 == 0) {
 		    		System.out.println(i + " users loaded...");
 					db.commit();
