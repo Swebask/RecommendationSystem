@@ -67,11 +67,12 @@ public class ModelTrainer {
 		Matrix matrix = createUserUserMatrix(newUserSet);
 		
 		saveUserSimilarityMatrix(matrix, userSimilarityOutputFileName);
-		
+		/*
 		ClusterMembership clusterMembers =  TestSpectralClustering.
 				returnAssignmentsAfterSpectralClustering(matrix);
 		
 		clusterMembers.serializeToFile(clustersOutputFileName);
+		*/
 	}
 
 	public static void calculateSimilarityMatrixAndCluster(String userOutputFileName, 
@@ -214,8 +215,8 @@ public class ModelTrainer {
 			FeatureNameTable.populateFeatureNames();
 			UserIDLookupTable.populateFeatureNames();
 			System.out.println("Intitalization done...");
-			//ModelTrainer.trainModel(trainingInputFileName, userOutputFileName, itemSetOutputFileName, 
-			//		clustersOutputFileName, similarityMatrixOutputFileName);
+			ModelTrainer.trainModel(trainingInputFileName, userOutputFileName, itemSetOutputFileName, 
+					clustersOutputFileName, similarityMatrixOutputFileName);
 			
 			ModelTrainer.calculateSimilarityMatrixAndCluster(pathPrefix+userOutputFileName, clustersOutputFileName, 
 					similarityMatrixOutputFileName);

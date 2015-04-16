@@ -29,7 +29,7 @@ public class ReviewPredictor {
 		/**
 		 *
 		 */
-		this.trainingModel = ItemSet.deserializeFile("./itemSetOutput");
+		this.trainingModel = ItemSet.deserializeFile("./itemSetOutput.txt");
 	}
 	public void init() throws ClassNotFoundException, IOException{
 		/**

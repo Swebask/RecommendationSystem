@@ -4,11 +4,15 @@
 package edu.asu.sml.reco.core.prediction;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import edu.asu.sml.reco.core.ItemSet;
@@ -29,9 +33,10 @@ public class TestDriver {
 	private List<Double> errors;
 	private List<Double> reviewErrorsCosine;
 	private List<Double> reviewErrorsLp;
-	public TestDriver() throws FileNotFoundException{
+	public TestDriver() throws ClassNotFoundException, IOException{
 
 		this.predictor = new ReviewPredictor();
+		this.predictor.init();
 	}
 
 
@@ -43,7 +48,7 @@ public class TestDriver {
 		InputStream gzipStream = new FileInputStream(testFileName);
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(gzipStream));
 		int N=1;
-		double totalError=0;
+		double totalError=0,trv=0,trvlp=0;
 		String line = null;
 		SentimentScore sentimentScore = new SentimentScore();
         sentimentScore.prepareForScoring();
@@ -87,12 +92,17 @@ public class TestDriver {
 				FeatureSet givenFeatureSet = this.getFeatureSetForKeysPhrases(
 						featureKeys.split("@"), featurePhrases.split("@"),
 						sentimentScore);
-				this.reviewErrorsCosine.add(UserSimilarityUtil
+				double rec = UserSimilarityUtil
 						.getFeatureSetSimilarity(review.getFeatureVector(),
-								givenFeatureSet));
-				this.reviewErrorsLp.add(UserSimilarityUtil
+								givenFeatureSet);
+				trv+=rec;
+				this.reviewErrorsCosine.add(rec);
+				
+				double relp = UserSimilarityUtil
 						.getFeatureSet_LpNormSimilarity(
-								review.getFeatureVector(), givenFeatureSet, 2));
+								review.getFeatureVector(), givenFeatureSet, 2);
+				this.reviewErrorsLp.add(relp);
+				trvlp+=relp;
 			}
 			
 		}
@@ -129,9 +139,9 @@ public class TestDriver {
 		return line.split(":")[1];
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ClassNotFoundException {
 		TestDriver testDriver;
-		String testFileName = "";
+		String testFileName = "./test.txt";
 		try {
 			testDriver = new TestDriver();
 			testDriver.test(testFileName);
@@ -142,4 +152,19 @@ public class TestDriver {
 		}
 		
 	}
+	
+	private void writeErrors(double err, double rec, double relp) throws IOException{
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+				new FileOutputStream("errorsDependencyBased.txt"), "utf-8"));
+		writer.write(err+"\t"+rec+"\t"+relp+"\n");
+		
+		for(int i=0;i<this.errors.size();i++){
+			writer.write(this.errors.get(i)+"\t"+this.reviewErrorsCosine.get(i)
+					+"\t"+this.reviewErrorsLp.get(i)+"\n");
+		}
+		
+		writer.close();
+		
+	}
+	
 }
