@@ -86,15 +86,20 @@ public class UserSet {
 		    DB db = DBMaker.newFileDB(new File("testdb"))
 			           .closeOnJvmShutdown()
 			           .make();
+		    System.out.println("Total number of users:"+size);
 		    ConcurrentNavigableMap<String,User> idToUserMap = db.getTreeMap("idToUserMap");
 		    for(int i=0; i < size; i++) {
 		    	Entry<String,User> entry = (Entry<String, User>) input.readObject();
 		    	idToUserMap.put(entry.getKey(), entry.getValue());
-		    	if(idToUserMap.size()%10000 == 0)
+		    	if(i%5000 == 0) {
+		    		System.out.println(i + " users loaded...");
 					db.commit();
+		    	}
+		    	
 		    }
 		    
 		    input.close();
+		    System.out.println("User set loading done...");
 		    return new UserSet(idToUserMap, db);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();

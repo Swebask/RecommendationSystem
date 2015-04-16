@@ -31,11 +31,11 @@ public class TestDriver {
 
 
 
-	public void test() throws IOException{
+	public void test(String testFileName) throws IOException{
 		/**
 		 * Read each record from test set 
 		 */
-		InputStream gzipStream = new FileInputStream("filename");
+		InputStream gzipStream = new FileInputStream(testFileName);
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(gzipStream));
 		int N=1;
 		double totalError=0;
@@ -83,5 +83,19 @@ public class TestDriver {
 
 	private String getValueFromKVPair(String line) {
 		return line.split(":")[1];
+	}
+	
+	public static void main(String[] args) {
+		TestDriver testDriver;
+		String testFileName = "";
+		try {
+			testDriver = new TestDriver();
+			testDriver.test(testFileName);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 }

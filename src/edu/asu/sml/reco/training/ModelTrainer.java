@@ -2,7 +2,6 @@ package edu.asu.sml.reco.training;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -14,11 +13,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.Set;
-
-import org.mapdb.DB;
-import org.mapdb.DBMaker;
 
 import edu.asu.sml.reco.core.ItemSet;
 import edu.asu.sml.reco.core.TestSpectralClustering;
@@ -28,7 +23,6 @@ import edu.asu.sml.reco.core.UserSimilarityUtil;
 import edu.asu.sml.reco.ds.ClusterMembership;
 import edu.asu.sml.reco.ds.FeatureNameTable;
 import edu.asu.sml.reco.ds.FeatureSet;
-import edu.asu.sml.reco.ds.ProductItem;
 import edu.asu.sml.reco.ds.User;
 import edu.asu.sml.reco.ds.UserIDLookupTable;
 import edu.ucla.sspace.matrix.Matrix;
@@ -78,10 +72,24 @@ public class ModelTrainer {
 				returnAssignmentsAfterSpectralClustering(matrix);
 		
 		clusterMembers.serializeToFile(clustersOutputFileName);
-		
-
 	}
 
+	public static void calculateSimilarityMatrixAndCluster(String userOutputFileName, 
+			String clustersOutputFileName,
+			String userSimilarityOutputFileName) {
+		UserSet newUserSet = UserSet.deserializeFile(userOutputFileName);
+		Matrix matrix = createUserUserMatrix(newUserSet);
+		
+		newUserSet = null;
+		System.gc();
+		saveUserSimilarityMatrix(matrix, userSimilarityOutputFileName);
+		
+		ClusterMembership clusterMembers =  TestSpectralClustering.
+				returnAssignmentsAfterSpectralClustering(matrix);
+		
+		clusterMembers.serializeToFile(clustersOutputFileName);
+	}
+	
 	private static void saveUserSimilarityMatrix(Matrix matrix,
 			String userSimilarityOutputFileName) {
 		try {
@@ -91,7 +99,13 @@ public class ModelTrainer {
 			int rows = matrix.rows();
 			output.writeInt(rows);
 			for(int i=0; i < rows ; i++) {
-				output.writeObject(matrix.getRowVector(i));
+				double[] row = matrix.getRow(i);
+				output.writeObject(row);
+				//output.writeObject(matrix.getRowVector(i));
+				if(i%100==0) {
+					System.out.println(i + " rows saved...");
+					System.gc();
+				}
 			}
 			//output.writeObject(matrix);
 			output.close();
@@ -113,7 +127,7 @@ public class ModelTrainer {
 
 		    Matrix matrix = new SparseOnDiskMatrix(UserIDLookupTable.getSize(), UserIDLookupTable.getSize());
 		    for(int i=0; i < rows; i++) {
-		    	SparseDoubleVector vector = (SparseHashDoubleVector) input.readObject();
+		    	double[] vector = (double[]) input.readObject();
 		    	
 		    	matrix.setRow(i, vector);
 		    }
@@ -143,6 +157,7 @@ public class ModelTrainer {
 		
 		Set<String> userIDs = newUserSet.getUserIDIterator();
 		
+		int i = 0;
 		for(String userID: userIDs) {
 			int row = UserIDLookupTable.lookUp(userID);
 			User user_i = newUserSet.getLinkedUserProfile(userID);
@@ -154,7 +169,9 @@ public class ModelTrainer {
 				double similarity = UserSimilarityUtil.getUserUserSimilarity(user_i, user_j);
 				matrix.set(row, col, similarity);
 			}
-			
+			i++;
+			if(i%500 == 0)
+				System.out.println(i + " users similarity calculated...");
 		}
 		return matrix;
 	}
@@ -169,6 +186,7 @@ public class ModelTrainer {
 	}
 	
 	public static void main(String[] args) {
+		String pathPrefix = "/home/somak/Dropbox/SML/";
 		String trainingInputFileName = "./parsedReviewTraining.txt";
 		String userOutputFileName = "userOutput.txt";
 		String itemSetOutputFileName = "itemSetOutput.txt";
@@ -179,8 +197,11 @@ public class ModelTrainer {
 			FeatureNameTable.populateFeatureNames();
 			UserIDLookupTable.populateFeatureNames();
 			System.out.println("Intitalization done...");
-			ModelTrainer.trainModel(trainingInputFileName, userOutputFileName, itemSetOutputFileName, 
-					clustersOutputFileName, similarityMatrixOutputFileName);
+			//ModelTrainer.trainModel(trainingInputFileName, userOutputFileName, itemSetOutputFileName, 
+			//		clustersOutputFileName, similarityMatrixOutputFileName);
+			
+			ModelTrainer.calculateSimilarityMatrixAndCluster(pathPrefix+userOutputFileName, pathPrefix +clustersOutputFileName, 
+					similarityMatrixOutputFileName);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
