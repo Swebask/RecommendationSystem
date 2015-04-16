@@ -12,9 +12,12 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 import edu.asu.sml.reco.core.ItemSet;
+import edu.asu.sml.reco.core.UserSimilarityUtil;
+import edu.asu.sml.reco.ds.FeatureSet;
 import edu.asu.sml.reco.ds.ProductItem;
 import edu.asu.sml.reco.ds.User;
 import edu.asu.sml.reco.reader.Review;
+import edu.asu.sml.reco.scoring.SentimentScore;
 
 /**
  * @author Arindam
@@ -24,6 +27,8 @@ public class TestDriver {
 	private ItemSet testModel;
 	private ReviewPredictor predictor;
 	private List<Double> errors;
+	private List<Double> reviewErrorsCosine;
+	private List<Double> reviewErrorsLp;
 	public TestDriver() throws FileNotFoundException{
 
 		this.predictor = new ReviewPredictor();
@@ -40,6 +45,9 @@ public class TestDriver {
 		int N=1;
 		double totalError=0;
 		String line = null;
+		SentimentScore sentimentScore = new SentimentScore();
+        sentimentScore.prepareForScoring();
+        
 		while((line=bufferedReader.readLine())!= null) {
 			//product/productId: B00002066I
 			String productID = getValueFromKVPair(line);
@@ -75,12 +83,48 @@ public class TestDriver {
 				double predictedScore = Double.valueOf(review.getScore());
 				this.errors.add(actualScore-predictedScore);
 				totalError+=Math.pow(actualScore-predictedScore, 2);
+				
+				FeatureSet givenFeatureSet = this.getFeatureSetForKeysPhrases(
+						featureKeys.split("@"), featurePhrases.split("@"),
+						sentimentScore);
+				this.reviewErrorsCosine.add(UserSimilarityUtil
+						.getFeatureSetSimilarity(review.getFeatureVector(),
+								givenFeatureSet));
+				this.reviewErrorsLp.add(UserSimilarityUtil
+						.getFeatureSet_LpNormSimilarity(
+								review.getFeatureVector(), givenFeatureSet, 2));
 			}
 			
 		}
 		bufferedReader.close();
 	}
 
+	public FeatureSet getFeatureSetForKeysPhrases(String[] featureKeys,
+			String[] featurePhrases, SentimentScore sentimentScore) throws IOException {
+
+		FeatureSet featuresForThisReview = new FeatureSet();
+        double value;
+
+		for(int i = 1; i < featureKeys.length; i++) {
+            value = 0.0;
+
+            try{
+            String featureName = featureKeys[i];
+            
+            String[] phrases = featurePhrases[i].split("#");
+
+            for(String phrase:phrases)
+				value += sentimentScore.getScore(phrase);
+			value =  value/phrases.length;
+
+            featuresForThisReview.setFeature(featureName, value);
+            }catch(Exception e){
+            	e.printStackTrace();
+            }
+		}
+		return featuresForThisReview;
+	}
+	
 	private String getValueFromKVPair(String line) {
 		return line.split(":")[1];
 	}
