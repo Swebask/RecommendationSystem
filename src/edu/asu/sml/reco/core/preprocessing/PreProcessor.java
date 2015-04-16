@@ -4,10 +4,13 @@
 package edu.asu.sml.reco.core.preprocessing;
 
 import java.io.BufferedWriter;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -34,11 +37,11 @@ public class PreProcessor {
 		this.freReader = new FrequentUserReader();
 		this.itemDescReader = new ItemDescriptionReader();
 		this.reviewReader = new MusicReviewReader();
-		this.extractor = new FeatureExtractor();
+		this.extractor = new NGramFeatureExtractor();
 		this.features = new HashSet<String>();
 		try {
 			writerTraining = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream("parsedReviewTraining.txt"), "utf-8"));
+					new FileOutputStream("parsedReviewTraining4Gram.txt"), "utf-8"));
 			writerTesting = new BufferedWriter(new OutputStreamWriter(
 					new FileOutputStream("parsedReviewTesting.txt"), "utf-8"));
 			writerFeature = new BufferedWriter(new OutputStreamWriter(
@@ -62,9 +65,11 @@ public class PreProcessor {
 	 * @throws IOException
 	 */
 	public void process() throws IOException{
-		int flag = 7;
+		int flag = 29171;
 		Review review = this.reviewReader.getNext();
-		while(review!=null ){
+		Map<String,String> reviewMap = new HashMap<String,String>();
+		
+		while(review!=null && flag>0){
 			if(review.getUserId()!=null
 					&& !review.getUserId().equalsIgnoreCase("unknown")){
 				if(freqUser.containsKey(review.getUserId())&& review.getText()!=null){
@@ -74,6 +79,7 @@ public class PreProcessor {
 									review.getText()));
 					
 					this.features.addAll(review.getFeatureValues().keySet());
+					reviewMap.put(review.getProductId(),review.getUserId());
 					if(count>0){
 						this.write(review,writerTraining);
 						freqUser.put(review.getUserId(), count-1);
@@ -97,6 +103,7 @@ public class PreProcessor {
 		this.writerTraining.close();
 		this.writerTesting.close();
 		this.writerFeature.close();
+		this.writeReviewPair(reviewMap);
 	}
 	/**
 	 * write the review into a file
@@ -124,5 +131,14 @@ public class PreProcessor {
 		for(String s: this.features){
 			writer.write(s.trim()+"\n");
 		}
+	}
+	
+	private void writeReviewPair(Map<String,String> r) throws IOException{
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+				new FileOutputStream("itemUserMap.txt"), "utf-8"));
+		for(Entry<String, String> e: r.entrySet()){
+			writer.write(e.getKey().trim()+"\t"+e.getValue().trim()+"\n");
+		}
+		writer.close();
 	}
 }

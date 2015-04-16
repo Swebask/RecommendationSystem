@@ -64,7 +64,7 @@ public class TestDriver {
 			// review/text: <text>
 			line = bufferedReader.readLine();
 			String text = getValueFromKVPair(line);
-
+			
 			line = bufferedReader.readLine();
 			String featureKeys = getValueFromKVPair(line);
 

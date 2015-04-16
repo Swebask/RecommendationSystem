@@ -42,10 +42,16 @@ public class UserIDLookupTable {
 	}
 
 	public static Integer lookUp(String userID) {
+		if(usersToIndexMap.get(userID)==null){
+			return null;
+		}
 		return usersToIndexMap.get(userID).getKey();
 	}
 	
 	public static Double getAveragerating(String userID){
+		if(usersToIndexMap.get(userID)==null){
+			return null;
+		}
 		return usersToIndexMap.get(userID).getValue();
 	}
 }

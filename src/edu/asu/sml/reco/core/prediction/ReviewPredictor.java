@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import edu.asu.sml.reco.core.ItemSet;
+import edu.asu.sml.reco.core.UserSet;
 import edu.asu.sml.reco.ds.FeatureSet;
 import edu.asu.sml.reco.ds.ProductItem;
 import edu.asu.sml.reco.ds.UserIDLookupTable;
@@ -28,7 +29,7 @@ public class ReviewPredictor {
 		/**
 		 *
 		 */
-		this.trainingModel = ItemSet.deserializeFile("");
+		this.trainingModel = ItemSet.deserializeFile("./itemSetOutput");
 	}
 	public void init() throws ClassNotFoundException, IOException{
 		/**
@@ -36,8 +37,10 @@ public class ReviewPredictor {
 		 * read item, user, rating map
 		 */
 		this.rating = new ItemProductRatingReader().read();
-		this.userUserSim = ModelTrainer.deserializeUserSimilarityMatrix("");
+		this.userUserSim = ModelTrainer.createUserUserMatrix(
+				UserSet.deserializeFile("./userOutput.txt"));
 	}
+	
 	public Review predict(String userId, String itemId){
 		/**
 		 * Read the user cluster
