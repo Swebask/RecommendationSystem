@@ -24,13 +24,17 @@ public class UserSimilarityUtil {
 
         intersection.retainAll(featureIndicesUser2);
 
+        double normSum1 = 0.0;
+        double normSum2 = 0.0;
         for (Integer featureIndex : intersection) {
             double scoreUser1 = setOfFeaturesUser1.getFeatureValue(featureIndex);
             double scoreUser2 = setOfFeaturesUser1.getFeatureValue(featureIndex);
 
             sum += scoreUser1*scoreUser2;
+            normSum1 += scoreUser1*scoreUser1;
+            normSum2 += scoreUser2*scoreUser2;
         }
 
-        return sum/(Math.pow(intersection.size(), 2.0));
+        return intersection.size() == 0? 0.0 : sum/(Math.sqrt(normSum1)*Math.sqrt(normSum2));//(Math.pow(intersection.size(), 2.0));
 	}
 }
