@@ -58,7 +58,8 @@ public class ItemSet {
 			ObjectOutput output = new ObjectOutputStream(buffer);
 			output.writeInt(idToProductItemMap.size());
 			for(Entry<String,ProductItem> entry:idToProductItemMap.entrySet()) {
-				output.writeObject(entry);
+				output.writeObject(entry.getKey());
+				output.writeObject(entry.getValue());
 			}
 			output.close();
 			System.out.println("Item set exported to:" + outputFileName);
@@ -80,8 +81,10 @@ public class ItemSet {
 			           .make();
 		    ConcurrentNavigableMap<String, ProductItem> idToProductItemMap = db.getTreeMap("idToProductItemMap");
 		    for(int i=0; i < size; i++) {
-		    	Entry<String,ProductItem> entry = (Entry<String, ProductItem>) input.readObject();
-		    	idToProductItemMap.put(entry.getKey(), entry.getValue());
+		    	String key = (String)input.readObject();
+		    	ProductItem productItem = (ProductItem) input.readObject();
+		    	//Entry<String,ProductItem> entry = (Entry<String, ProductItem>) input.readObject();
+		    	idToProductItemMap.put(key, productItem);
 		    	if(idToProductItemMap.size()%10000 == 0)
 					db.commit();
 		    }
@@ -96,5 +99,10 @@ public class ItemSet {
 			e.printStackTrace();
 		} 
 		return null;
+	}
+	
+	public static void main(String[] args) {
+		ItemSet itemset = ItemSet.deserializeFile("/home/somak/itemSetOutput.txt");
+		System.out.println("Done");
 	}
 }
