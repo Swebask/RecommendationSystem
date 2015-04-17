@@ -18,6 +18,14 @@ public class ClusterMembership implements java.io.Serializable {
 		this.clusterMembers = clusterMembers;
 	}
 	
+	public Set<Integer> getCluster(int index) {
+		for(Set<Integer> clusterMember: clusterMembers) {
+			if(clusterMember.contains(index))
+				return clusterMember;
+		}
+		return null;
+	}
+	
 	public void serializeToFile(String outputFileName) {
 		try {
 			OutputStream file = new FileOutputStream(outputFileName);
