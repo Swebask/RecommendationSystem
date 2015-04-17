@@ -1,6 +1,7 @@
 package edu.asu.sml.reco.ds;
 
 import edu.asu.sml.reco.scoring.SentimentScore;
+import edu.asu.sml.reco.scoring.SentimentScore2;
 import lombok.AccessLevel;
 import lombok.Getter;
 
@@ -47,7 +48,7 @@ public class User implements java.io.Serializable {
 	 * @param featurePhrases
 	 */
 	public void addFeatureValuesToProfile(ProductItem productItem,
-			String userID2, String[] featureKeys, String[] featurePhrases, SentimentScore sentimentScore) throws IOException {
+			String userID2, String[] featureKeys, String[] featurePhrases, SentimentScore2 sentimentScore) throws IOException {
 
 		FeatureSet featuresForThisReview = new FeatureSet();
         double value;

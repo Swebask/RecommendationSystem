@@ -11,6 +11,7 @@ import java.util.zip.GZIPInputStream;
 import edu.asu.sml.reco.ds.ProductItem;
 import edu.asu.sml.reco.ds.User;
 import edu.asu.sml.reco.scoring.SentimentScore;
+import edu.asu.sml.reco.scoring.SentimentScore2;
 
 public class UserProfileCreator {
 
@@ -44,7 +45,7 @@ public class UserProfileCreator {
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(gzipStream));
 		
 		String line = null;
-        SentimentScore sentimentScore = new SentimentScore();
+        SentimentScore2 sentimentScore = new SentimentScore2();
         sentimentScore.prepareForScoring();
 
         int reviewNum =0;
