@@ -53,8 +53,8 @@ public class ReviewPredictor {
 		prediction.setProductId(itemId);
 		prediction.setUserId(userId);
 
-		ProductItem item = this.trainingModel.getLinkedItemProfile(itemId);
-		Integer userIndex = UserIDLookupTable.lookUp(userId);
+		ProductItem item = this.trainingModel.getLinkedItemProfile(itemId.trim());
+		Integer userIndex = UserIDLookupTable.lookUp(userId.trim());
 		if(item==null|| userIndex==null){
 			prediction.setScore("");
 			return prediction;
@@ -71,9 +71,16 @@ public class ReviewPredictor {
 				Double avgRating = UserIDLookupTable.getAveragerating(entry.getKey());
 
 				Double sim = this.userUserSim.get(userIndex, ind);
-				tot+=sim;
-				ratingShift += sim*(getRating(itemId,entry.getKey())-avgRating);
-				values.merge(entry.getValue(), sim);
+				
+				Double r =getRating(itemId,entry.getKey());
+				if(r!=null){
+					ratingShift += sim*(r-avgRating);
+					values.merge(entry.getValue(), sim);
+					tot+=sim;
+				}else{
+					values.merge(entry.getValue(), sim);
+					tot+=sim;
+				}
 			}
 			if(tot>0.0){
 				values.scale(tot);
@@ -86,7 +93,10 @@ public class ReviewPredictor {
 		return prediction;
 	}
 
-	private Double getRating(String userId, String itemId){
-		return this.rating.get(itemId+"-"+userId);	
+	private Double getRating( String itemId,String userId){
+		Double rating = this.rating.get(itemId.trim()+"-"+userId.trim());
+		if(rating==null)
+			return this.rating.get(" "+itemId.trim()+"-"+userId.trim());
+		return rating;
 	}
 }

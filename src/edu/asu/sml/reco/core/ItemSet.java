@@ -40,7 +40,12 @@ public class ItemSet {
 	}
 	
 	public ProductItem getLinkedItemProfile(String itemID) {
-		return idToProductItemMap.get(itemID);
+		ProductItem item = idToProductItemMap.get(" "+itemID);
+		if(item==null){
+			return idToProductItemMap.get(itemID);
+		}else{
+			return item;
+		}
 	}
 	
 	public void addProductItemToMap(String itemId, String title, double price) {

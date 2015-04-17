@@ -205,7 +205,7 @@ public class ModelTrainer {
 	
 	public static void main(String[] args) {
 		String pathPrefix = "./";
-		String trainingInputFileName = "parsedReviewTraining.txt";
+		String trainingInputFileName = "parsedReviewTraining5Gram.txt";
 		String userOutputFileName = "userOutput.txt";
 		String itemSetOutputFileName = "itemSetOutput.txt";
 		String clustersOutputFileName = "clusterOutput.txt";
@@ -218,8 +218,8 @@ public class ModelTrainer {
 			ModelTrainer.trainModel(trainingInputFileName, userOutputFileName, itemSetOutputFileName, 
 					clustersOutputFileName, similarityMatrixOutputFileName);
 			
-			ModelTrainer.calculateSimilarityMatrixAndCluster(pathPrefix+userOutputFileName, clustersOutputFileName, 
-					similarityMatrixOutputFileName);
+			//ModelTrainer.calculateSimilarityMatrixAndCluster(pathPrefix+userOutputFileName, clustersOutputFileName, 
+				//	similarityMatrixOutputFileName);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

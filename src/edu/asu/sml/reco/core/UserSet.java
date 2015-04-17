@@ -28,7 +28,7 @@ public class UserSet {
 	//private HashMap<String, User> idToUserMap = new HashMap<String, User>();
 	private  ConcurrentNavigableMap<String,User> idToUserMap;
 	private DB db;
-	
+	private static int counter =1;
 	
 	public UserSet(ConcurrentNavigableMap<String, User> idToUserMap, DB db) {
 		super();
@@ -37,7 +37,7 @@ public class UserSet {
 	}
 
 	public UserSet() {
-		db = DBMaker.newFileDB(new File("testdb"))
+		db = DBMaker.newFileDB(new File("testdb_"+counter++))
 		           .closeOnJvmShutdown()
 		           .make();
 		idToUserMap = db.getTreeMap("idToUserMap");
@@ -85,7 +85,7 @@ public class UserSet {
 		    InputStream buffer = new BufferedInputStream(file);
 		    ObjectInput input = new ObjectInputStream (buffer);
 		    int size = input.readInt();
-		    DB db = DBMaker.newFileDB(new File("testdb"))
+		    DB db = DBMaker.newFileDB(new File("testdb_"+counter++))
 			           .closeOnJvmShutdown()
 			           .make();
 		    System.out.println("Total number of users:"+size);

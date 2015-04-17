@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.LinkedList;
 import java.util.List;
 
 import edu.asu.sml.reco.core.ItemSet;
@@ -36,6 +37,9 @@ public class TestDriver {
 	public TestDriver() throws ClassNotFoundException, IOException{
 
 		this.predictor = new ReviewPredictor();
+		this.errors = new LinkedList<Double> ();
+		this.reviewErrorsCosine = new LinkedList<Double> ();
+		this.reviewErrorsLp = new LinkedList<Double> ();
 		this.predictor.init();
 	}
 
@@ -84,8 +88,14 @@ public class TestDriver {
 			
 			//test accuracy between two review object
 			if(!review.getScore().isEmpty()){
+				N++;
 				double actualScore = Double.valueOf(score);
 				double predictedScore = Double.valueOf(review.getScore());
+				if(predictedScore < 0.0){
+					predictedScore = 0.0;
+				}else if(predictedScore > 5.0){
+					predictedScore = 5.0;
+				}
 				this.errors.add(actualScore-predictedScore);
 				totalError+=Math.pow(actualScore-predictedScore, 2);
 				
@@ -106,6 +116,11 @@ public class TestDriver {
 			}
 			
 		}
+		
+		totalError = Math.sqrt(totalError)/N;
+		trv/=N;
+		trvlp/=N;
+		writeErrors(totalError,trv,trvlp);
 		bufferedReader.close();
 	}
 
@@ -136,7 +151,11 @@ public class TestDriver {
 	}
 	
 	private String getValueFromKVPair(String line) {
+		try{
 		return line.split(":")[1];
+		}catch(Exception e){
+			return "";
+		}
 	}
 	
 	public static void main(String[] args) throws ClassNotFoundException {
@@ -146,9 +165,9 @@ public class TestDriver {
 			testDriver = new TestDriver();
 			testDriver.test(testFileName);
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+		
 		} catch (IOException e) {
-			e.printStackTrace();
+			
 		}
 		
 	}

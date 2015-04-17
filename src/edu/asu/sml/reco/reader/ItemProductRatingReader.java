@@ -59,7 +59,7 @@ public class ItemProductRatingReader {
 				continue;
 			}
 
-			this.userScore.put(productID+"-"+userID, score);
+			this.userScore.put(productID.trim()+"-"+userID.trim(), score);
 		}
 		
 		return this.userScore;

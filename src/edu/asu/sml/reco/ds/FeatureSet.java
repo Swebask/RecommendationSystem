@@ -71,6 +71,8 @@ public class FeatureSet implements java.io.Serializable {
 	}
 
 	public void merge(FeatureSet featuresForThisReview,Double scaling) {
+		if(featuresForThisReview ==null)
+			return;
 		for(Entry<Integer,Double> entry: featuresForThisReview.featureValues.entrySet()) {
 			Double oldValue = this.featureValues.get(entry.getKey());
 			if(oldValue==null){
