@@ -37,19 +37,28 @@ public class UserSimilarityUtil {
 	}
 	
 	public static double getFeatureSet_LpNormSimilarity(FeatureSet feature1, FeatureSet feature2, int power) {
-        double sum = 0.0;
+        double sum = 0.0,sum1=0.0,sum2=0.0;
 
         Set<Integer> featureIndicesUser1 = feature1.getFeatureIndices();
         Set<Integer> featureIndicesUser2 = feature2.getFeatureIndices();
         Set<Integer> intersection = new HashSet<Integer>(featureIndicesUser1);
 
         intersection.retainAll(featureIndicesUser2);
+        
+        for (Integer featureIndex : intersection) {
+            double scoreUser1 = feature1.getFeatureValue(featureIndex);
+            double scoreUser2 = feature2.getFeatureValue(featureIndex);
+
+            sum1+= Math.pow(scoreUser1, 2);
+            sum2+= Math.pow(scoreUser2, 2);
+        }
 
         for (Integer featureIndex : intersection) {
             double scoreUser1 = feature1.getFeatureValue(featureIndex);
             double scoreUser2 = feature2.getFeatureValue(featureIndex);
 
-            sum += Math.pow(scoreUser1-scoreUser2,2);
+            sum += Math.pow(scoreUser1/sum1-scoreUser2/sum2,2);
+           
         }
 
         Set<Integer> onlyFeature1Indices =  new HashSet<Integer>(featureIndicesUser1);
@@ -57,14 +66,14 @@ public class UserSimilarityUtil {
         for (Integer featureIndex : onlyFeature1Indices) {
             double scoreUser1 = feature1.getFeatureValue(featureIndex);
 
-            sum += Math.pow(scoreUser1-0.5,2);
+            sum += Math.pow(scoreUser1/sum1-0.5,2);
         }
         Set<Integer> onlyFeature2Indices =  new HashSet<Integer>(featureIndicesUser2);
         onlyFeature2Indices.removeAll(intersection);
         for (Integer featureIndex : onlyFeature2Indices) {
             double scoreUser2 = feature1.getFeatureValue(featureIndex);
 
-            sum += Math.pow(0.5-scoreUser2,2);
+            sum += Math.pow(0.5-scoreUser2/sum2,2);
         }
         return Math.sqrt(sum);
 	}
@@ -91,6 +100,10 @@ public class UserSimilarityUtil {
             normSum2 += scoreUser2*scoreUser2;
         }
 
-        return intersection.size() == 0? 0.0 : sum/(Math.sqrt(normSum1)*Math.sqrt(normSum2));//(Math.pow(intersection.size(), 2.0));
+        double sim =  intersection.size() == 0? 0.0 : sum/(Math.sqrt(normSum1)*Math.sqrt(normSum2));//(Math.pow(intersection.size(), 2.0));
+        if(sim<0){
+        	sim = 0-sim;
+        }
+        return sim;
 	}
 }
