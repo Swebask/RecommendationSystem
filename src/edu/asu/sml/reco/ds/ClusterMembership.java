@@ -46,10 +46,11 @@ public class ClusterMembership implements java.io.Serializable {
 			InputStream file = new FileInputStream(inputFileName);
 		    InputStream buffer = new BufferedInputStream(file);
 		    ObjectInput input = new ObjectInputStream (buffer);
-		    ClusterMembership clusterMembers = (ClusterMembership) input.readObject();
+		    @SuppressWarnings("unchecked")
+			List<Set<Integer>>  clusterMembers = (List<Set<Integer>>) input.readObject();
 		    
 		    input.close();
-		    return clusterMembers;
+		    return new ClusterMembership(clusterMembers);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -58,5 +59,10 @@ public class ClusterMembership implements java.io.Serializable {
 			e.printStackTrace();
 		} 
 		return null;
+	}
+	
+	public static void main(String[] args) {
+		ClusterMembership cluster = deserializeFile("/home/somak/Dropbox/SML/clusterOutput.txt");
+		System.out.println("desrialized");
 	}
 }
